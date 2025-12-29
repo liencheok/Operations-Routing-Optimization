@@ -1,0 +1,142 @@
+import folium
+from geopy.distance import geodesic
+
+coordinates = {
+        0: (6.365312, 99.779810),
+        1: (6.395312, 99.859310),
+        2: (6.320843, 99.848460),
+        3: (6.350335, 99.730500),
+        4: (6.343856, 99.810250),
+        5: (6.320636, 99.746660),
+        6: (6.298007, 99.730200),
+        7: (6.315015, 99.857080),
+        8: (6.362556, 99.786222),
+        9: (6.329416, 99.743910),
+        10: (6.331417, 99.851917),
+        11: (6.409967, 99.716500),
+        12: (6.307500, 99.853000),
+        13: (6.336361, 99.813750),
+        14: (6.306156, 99.861010),
+        15: (6.334722, 99.874750),
+        16: (6.311093, 99.736750),
+        17: (6.327359, 99.834870),
+        18: (6.341325, 99.759220),
+        19: (6.328972, 99.83103),
+        20: (6.330778, 99.856556),
+        21: (6.421997, 99.816510),
+        22: (6.351111, 99.722611),
+        23: (6.331283, 99.724090),
+        24: (6.360496, 99.737110),
+        25: (6.340360, 99.786920),
+        26: (6.331805, 99.773460),
+        27: (6.362239, 99.745850),
+        28: (6.323974, 99.786660),
+        29: (6.287028, 99.733778),
+        30: (6.322172, 99.849320),
+        31: (6.323056, 99.849222),
+        32: (6.321584, 99.850590),
+        33: (6.321854, 99.852350),
+        34: (6.292503, 99.726130),
+        35: (6.302940, 99.851770),
+        36: (6.366004, 99.71224),
+        37: (6.3664092, 99.6862393),
+        38: (6.295222, 99.739778),
+        39: (6.429361, 99.796722),
+        40: (6.313083, 99.857056),
+        41: (6.378305, 99.869970),
+        42: (6.315729, 99.853860),
+        43: (6.318605, 99.856860),
+        44: (6.446715, 99.810670),
+        45: (6.367088, 99.676430),
+        46: (6.419722, 99.761167),
+        47: (6.396408, 99.741800),
+        48: (6.282945, 99.747060),
+        49: (6.367525, 99.725670),
+        50: (6.324861, 99.843680),
+        51: (6.354710, 99.770750),
+        52: (6.413222, 99.801167),
+        53: (6.328222, 99.863667),
+        54: (6.317583, 99.855611),
+    }
+
+# Define routes pca
+routes = {
+    1: [0, 11,46,52,39,44,21,41,15,53,14,35,12,20,10, 1, 0], 
+    2: [0, 27,47,24,49,36,37,45,22,3,23,16,38,6,34,29,48,5,9,18, 1, 0], 
+    3: [0, 51,26,28,32,40,7,43,54,42,33,2,31,50,17,19,13,4,25,8, 1, 0]
+}
+
+# Define routes pcagls
+#routes = {
+#    1: [0, 51, 18, 9, 5, 16, 38, 48, 29, 34, 6, 23, 3, 22, 45, 37, 36, 49, 24, 27, 1, 0], 
+#    2: [0, 26, 28, 31, 33, 42, 54, 43, 7, 40, 14, 35, 12, 32, 30, 2, 50, 17, 19, 4, 8, 1, 0], 
+#    3: [0, 47, 11, 46, 52, 39, 44, 21, 1, 41, 15, 53, 20, 10, 13, 25, 1, 0]
+#}
+
+
+# Create a folium map centered at an average location
+m = folium.Map(location=[6.365312, 99.779810], zoom_start=12)
+
+# Define colors for each vehicle route
+colors = {1: 'red', 2: 'blue', 3: 'green'}
+
+# Add routes and circular markers to the map
+for vehicle_id, route in routes.items():
+    # Extract the sequence of coordinates for the current route
+    route_coords = [coordinates[node] for node in route]
+
+    # Add the route as a PolyLine to the map
+    folium.PolyLine(route_coords, color=colors[vehicle_id], weight=5, opacity=0.7, tooltip=f'Vehicle {vehicle_id}').add_to(m)
+
+    # Add circular markers for each node in the route
+    for node in route:
+        folium.CircleMarker(
+            location=coordinates[node],
+            radius=5,  # Adjust the radius as needed
+            color=colors[vehicle_id],
+            fill=True,
+            fill_color=colors[vehicle_id],
+            fill_opacity=0.7,
+            popup=f'Node {node}'
+        ).add_to(m)
+
+# Highlight depot
+folium.Marker(
+    location=coordinates[0],
+    popup='Depot',
+    icon=folium.Icon(color='black', icon='home')
+).add_to(m)
+
+# Highlight landfill (assuming node 1 is the landfill)
+folium.Marker(
+    location=coordinates[1],
+    popup='Landfill',
+    icon=folium.Icon(color='orange', icon='trash')
+).add_to(m)
+
+# Add the title to the map
+title_html = '''
+     <h3 align="center" style="font-size:20px"><b>Vehicle Routes Map: Path Cheapest Arc</b></h3>
+     '''
+m.get_root().html.add_child(folium.Element(title_html))
+
+# Add the legend to the map
+legend_html = '''
+  <div style="
+  position: fixed;
+  bottom: 50px; left: 50px; width: 150px; height: 125px;
+  border:2px solid grey; z-index:9999; font-size:14px;
+  background-color:white; opacity: 0.8;
+  ">
+  &nbsp;<b>Legend</b><br>
+  &nbsp;<i class="fa fa-square-full fa-1x" style="color:red"></i>&nbsp; Vehicle 1<br>
+  &nbsp;<i class="fa fa-square-full fa-1x" style="color:blue"></i>&nbsp; Vehicle 2<br>
+  &nbsp;<i class="fa fa-square-full fa-1x" style="color:green"></i>&nbsp; Vehicle 3<br>
+  &nbsp;<i class="fa fa-square fa-1x" style="color:black"></i>&nbsp; Depot<br>
+  &nbsp;<i class="fa fa-square fa-1x" style="color:orange"></i>&nbsp; Landfill
+  </div>
+  '''
+m.get_root().html.add_child(folium.Element(legend_html))
+
+# Save the map to an HTML file
+m.save('vehicle_routes_map.html')
