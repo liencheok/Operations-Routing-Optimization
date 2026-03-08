@@ -1,9 +1,16 @@
 # Operations Routing Optimization
 
-This project demonstrates how data and optimization techniques can be used to improve operational efficiency.
+Overview:
+This project applies optimization techniques to model operational routing constraints, providing data-driven insights to improve efficiency and support decision-making.
 
-- Modeled routing constraints and operational requirements
-- Evaluated optimized routing outcomes
-- Interpreted results from an operations perspective
+Methods:
+-Developed optimization models to account for operational constraints and requirements.
+- Analyzed routing outcomes to evaluate efficiency improvements.
+- Visualized results using Python for easier interpretation and decision support.
 
-Skills: optimization, analytical thinking, operations data
+Skills & Tools:
+Python (Pandas, Matplotlib, NumPy), Optimization Techniques, Data Analysis, Data Visualization
+
+Key Results:
+- Identified routing solutions that improve operational efficiency.
+- Generated actionable insights to support operational planning and resource allocation.
